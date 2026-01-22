@@ -2,72 +2,38 @@
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Currently, two official plugins are available:
+# Het doel van de app -- Als voorbeeld - Checkbox React Component
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+In deze app wilden we laten zien waarom de className naar rhc-theme-methode die we gebruiken om het css cross contamination-probleem op te lossen,
+niet werkt in componenten die zich in een andere component bevinden, zoals een checkbox. 
 
-## React Compiler
+Wanneer we twee checkbox gebruiken, krijgen zowel Utrecht als Rhc de extra functies die we hebben toegevoegd en werken ze niet zoals verwacht.
+Om dit op te lossen, hebben we een manier nodig om dezelfde benadering/methode in alle componenten te kunnen gebruiken.
+Als u advies of een oplossing voor ons heeft, hoor ik dat graag. 
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+#Link van deze issue: 
+https://github.com/nl-design-system/rijkshuisstijl-community/issues/2113
 
-## Expanding the ESLint configuration
+  #TLDR
+  Op dit moment is het dat bepaalde RHC componenten styles op Utrecht css classes dat zorgt voor cross contamination wanner je rhc en utrecht op dezelfde pagina gebruikt.
+  zie #2110 voor tussentijdse oplossing
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+  #User Story
+  Als afnemer wil ik meerdere organisatie componenten kunnen gebruiken zonder dat ze elkaar beinvloeden.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+  Context
+  Het helpt met scoping; we kwamen dit tegen in de themes repository. Daar weergeven we componenten van Utrecht met het utrecht-theme en componenten van Rijkshuisstijl Community met het rhc-theme. De styling van beide word geimporteerd. Maar Rijkshuisstijl Community       maakt gebruik van Utrecht componenten en voegt extra styling toe, direct op de utrecht-action-group. Daardoor word deze styling van Rijkshuisstijl Community ook toegepast op de Utrecht componenten.
+  Door een rhc-action-group class toe te voegen, kan je styling toevoegen op de utrecht-action-group zonder dat dat effect heeft op het ecosysteem buiten de Rijkshuisstijl Community.
+  Nog een voorbeeld, los van de themes repository: als je een website maakt, wil je gebruik maken van componenten uit verschillende organisaties. Dan wil je niet dat de styling van die verschillende organisaties elkaar kapot maken omdat ze op dezelfde classes stylen.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+  Indien de gewenste oplossing een class toegevoegd dan moet dit ook bij de frameworks toevoegen in de markup.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+  Als ActionGroup uit Utrecht direct in SomeUtrechtComponent in Utrecht word gebruikt, zonder onze interference waar we de ActionGroup toevoegen. Als we dan SomeUtrechtComponent, blijft het probleem bestaan als je leunt op rhc-button-group. Zo zal het ook nooit buiten     je rhc-theme toegepast worden in bijv themes. Echter heb je dan minder controle over waar het toegepast word.      
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+  Actiepunten
+  dit willen we doen per component:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+  controleer of er cross contamination voorkomt
+  zoja: oplossen, zonee: oplossing opzetten voor toekomst om dit te vermijden
+  oplossing: is stijling die de RHC toepast nodig, bijv: heeft component bij de organisatie (bijv utrecht) toevallig tokens voor de overwrites die we doen of zijn er andere oplossingen die ze bieden?
+  als de styling wel nog nodig is kunnen we dit toevoegen via RHC tokens die via RHC classes worden toegepast.
